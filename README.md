@@ -1,27 +1,17 @@
-<h1 align="left">Welcome to _____ 👋</h1>
+<h1 align="left">Welcome to Game Wallet 👋</h1>
 <p align="left">
   <a href="#" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg" />
   </a>
 </p>
 
-> A DESCRIPTION OF THE PROJECT
+> Generate a seed phrase using a completely offline device
 
-## Demo ⏯️
+More coming soon.
 
 ## Usage 📖
 
-1. Install necessary dependencies
-
-```bash
- yarn add
-```
-
 ## Contributing 💡
-
-## Resources 🧑‍💻
-This repo is configured to use [Publish PR Packages](https://github.com/marketplace/actions/publish-pr-packages) to auto-publish packages
-for each pull request. Make sure you rename the template package name in `ci-release.yml` to your own package name.
 
 ## Sponsors ❤️
 
