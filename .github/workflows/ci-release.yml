@@ -1,0 +1,98 @@
+name: CI - Release
+
+on:
+  push:
+    branches: [main, staging, dev]
+
+jobs:
+  skip-release:
+    name: Skip Release
+    runs-on: ubuntu-20.04
+    outputs:
+      SKIP_RELEASE: ${{ steps.skip_release.outputs.SKIP_RELEASE }}
+    steps:
+      - name: Skip release
+        id: skip_release
+        run: |
+          SKIP_RELEASE=0
+          if grep -q '^v[0-9]' <<< "${{ github.event.head_commit.message }}" ; then
+             SKIP_RELEASE=1
+          elif github.event_name == 'pull_request' ; then
+            SKIP_RELEASE=1
+          elif ! grep -q 'staging\|main' <<< "${{ github.ref_name }}" ; then
+            SKIP_RELEASE=1
+          fi
+          echo SKIP_RELEASE: $SKIP_RELEASE
+          echo "::set-output name=SKIP_RELEASE::$SKIP_RELEASE"
+
+  update-version:
+    name: Update Version
+    runs-on: ubuntu-20.04
+    needs: skip-release
+    if: needs.skip-release.outputs.SKIP_RELEASE == 0
+    outputs:
+      IS_PRERELEASE: ${{ steps.update_version.outputs.IS_PRERELEASE }}
+      VERSION: ${{ steps.update_version.outputs.VERSION }}
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18.x
+          registry-url: https://registry.npmjs.org/
+
+      - name: Update version
+        id: update_version
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          IS_PRERELEASE=true
+          git config user.name "GITHUB-ACTION-CI-RELEASE"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          if [ ${{ github.ref_name }} == "main" ] ; then
+             npx lerna version --conventional-graduate --conventional-commits --yes
+             IS_PRERELEASE=false
+          else
+             npx lerna version prerelease --yes --preid staging
+          fi
+          npx lerna version prerelease --yes --preid staging
+          VERSION=v$(jq -r .version lerna.json)
+          echo "::set-output name=VERSION::$VERSION"
+          echo "::set-output name=IS_PRERELEASE::$IS_PRERELEASE"
+
+  create-release-draft:
+    name: Create Release Draft
+    needs: [update-version]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+
+      - name: Create release draft
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: true
+          prerelease: ${{ needs.update-version.outputs.IS_PRERELEASE }}
+          release_name: ${{ needs.update-version.outputs.VERSION }}
+          tag_name: ${{ needs.update-version.outputs.VERSION }}
+          body: |
+            Changes in this Release
+            ## Changed
+            ## Added
+            ## Fixes
+            ## Breaking
+
+      - name: Discord notify release draft
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_RELEASE }}
+        uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
+        with:
+          args: |
+            🗒️ Draft Release created for `@usekeyp/template-open-source-repo@${{ needs.update-version.outputs.VERSION }}` ${{ steps.create_release.outputs.html_url }}

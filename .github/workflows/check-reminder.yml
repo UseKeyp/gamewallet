@@ -1,0 +1,20 @@
+name: "check reminders"
+on:
+  schedule:
+    - cron: "0 17 * * 1-5"
+jobs:
+  reminder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check reminders and notify
+        uses: agrc/reminder-action@v1
+  pr-reviews-reminder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: davideviolante/pr-reviews-reminder-action@v1.5.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          webhook-url: ${{ secrets.DISCORD_REMINDER_WEBHOOK }} # Required
+          provider: "slack" # Required (slack or msteams)
+          github-provider-map: ${{ secrets.DISCORD_REMINDER_USERS }}

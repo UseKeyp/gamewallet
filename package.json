@@ -1,0 +1,21 @@
+{
+  "name": "template-open-source-repo",
+  "private": true,
+  "eslintConfig": {
+    "extends": "@redwoodjs/eslint-config",
+    "root": true
+  },
+  "engines": {
+    "node": ">=14.19 <=16.x",
+    "yarn": ">=1.15"
+  },
+  "packageManager": "yarn@3.2.3",
+  "author": "Keyp Team",
+  "license": "MIT",
+  "devDependencies": {
+    "lerna": "^6.4.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

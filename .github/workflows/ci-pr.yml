@@ -1,0 +1,20 @@
+name: CI - Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  ci:
+    name: PR Continuous Integration
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Publish Package
+        uses: UseKeyp/publish-pr-packages@v1.0.0
+        with:
+          token: ${{ secrets.PAT }}
