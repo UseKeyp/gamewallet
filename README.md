@@ -1,17 +1,21 @@
-<h1 align="left">Welcome to Game Wallet 👋</h1>
-<p align="left">
+<img align="center" src="./docs/title.png">
+<p align="left" style="margin-top: 10px;">
   <a href="#" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg" />
   </a>
 </p>
 
-> Generate a seed phrase using a completely offline device
+> Turn any GameBoy into a secure offline cold wallet.
 
-More coming soon.
+## Flash Your Own ⚡
 
-## Usage 📖
+If you’d like to create your own cartridge, and minimize trust, we’ll provide the necessary software and instructions here. You'll also need to obtain a flashing device and a compatible cartridge.
+
+Stay tuned for more!
 
 ## Contributing 💡
+
+Contributions are welcome!
 
 ## Sponsors ❤️
 
